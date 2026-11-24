@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>House Exterior — Interactive Vector Elevations</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d4e89'/%3E%3Cpath d='M5 23h22v-9L17 8 5 13v10zm4-3v-5l8-3.2L23 15v5H9z' fill='%23fff'/%3E%3C/svg%3E" />
+  <meta name="description" content="Interactive pure-vector architectural exterior elevations viewer (North, East, South, West) with true-scale height and area measurements, level datum guides, finish callouts, and glazing schedules." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Studio Header -->
+    <header class="topbar" role="banner">
+      <div class="brand-group">
+        <button id="btn-toggle-sidebar" class="icon-btn" title="Toggle Sidebar (B)" aria-label="Toggle sidebar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="9" y1="3" x2="9" y2="21" />
+          </svg>
+        </button>
+        <div class="brand-title">
+          <h1>House Exterior</h1>
+          <span class="brand-subtitle">Exterior Elevations · North, East, South &amp; West · 1/4" = 1'-0"</span>
+        </div>
+      </div>
+
+      <!-- Elevation View Switcher -->
+      <nav class="sheet-tabs" role="tablist" aria-label="Exterior Elevations">
+        <button class="sheet-tab active" data-view="all" role="tab" aria-selected="true" title="All 4 Elevations Board (Key 1)">
+          <span class="sheet-code">ALL</span> 4-Side Board
+        </button>
+        <button class="sheet-tab" data-view="north" role="tab" aria-selected="false" title="North Elevation (Key 2)">
+          <span class="sheet-code">A3.0</span> North
+        </button>
+        <button class="sheet-tab" data-view="east" role="tab" aria-selected="false" title="East Elevation (Key 3)">
+          <span class="sheet-code">A3.0</span> East
+        </button>
+        <button class="sheet-tab" data-view="south" role="tab" aria-selected="false" title="South Elevation (Key 4)">
+          <span class="sheet-code">A3.1</span> South
+        </button>
+        <button class="sheet-tab" data-view="west" role="tab" aria-selected="false" title="West Elevation (Key 5)">
+          <span class="sheet-code">A3.1</span> West
+        </button>
+      </nav>
+
+      <!-- Display Themes & Export -->
+      <div class="topbar-actions">
+        <div class="theme-picker" role="group" aria-label="Vector Display Theme">
+          <button class="theme-swatch swatch-paper active" data-theme="paper" title="Drafting Paper Theme" aria-label="Drafting Paper Theme"></button>
+          <button class="theme-swatch swatch-white" data-theme="white" title="Studio White Theme" aria-label="Studio White Theme"></button>
+          <button class="theme-swatch swatch-blueprint" data-theme="blueprint" title="Blueprint Theme" aria-label="Blueprint Theme"></button>
+          <button class="theme-swatch swatch-dark" data-theme="dark" title="Dark CAD Studio Theme" aria-label="Dark Studio Theme"></button>
+        </div>
+        <button id="btn-export-svg" class="icon-btn" title="Export Current View as Standalone Vector SVG">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>SVG</span>
+        </button>
+        <button id="btn-print" class="icon-btn" title="Print Vector Elevation">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+      <aside id="sidebar" class="sidebar" aria-label="Exterior Inspector">
+        <div class="sidebar-nav" role="tablist">
+          <button class="sidebar-nav-btn active" data-panel="views">Views</button>
+          <button class="sidebar-nav-btn" data-panel="materials">Materials</button>
+          <button class="sidebar-nav-btn" data-panel="glazing">Glazing</button>
+        </div>
+
+        <div class="sidebar-body">
+          <!-- Panel 1: Views, Guides & Quick Details -->
+          <section id="panel-views" class="sidebar-panel active">
+            <div class="section-label">Elevation Display Aids</div>
+
+            <div class="layer-card">
+              <label class="layer-row">
+                <div class="layer-info">
+                  <span class="layer-dot" style="background: var(--v-datum);"></span>
+                  <div>
+                    <div class="layer-name">Level Datum Guides</div>
+                    <div class="layer-desc">Highlight FFE, 2nd Fl., T.O.P. &amp; Ridge (L)</div>
+                  </div>
+                </div>
+                <span class="toggle-switch">
+                  <input type="checkbox" id="toggle-datums" />
+                  <span class="toggle-track"></span>
+                </span>
+              </label>
+            </div>
+
+            <div class="layer-card">
+              <label class="layer-row">
+                <div class="layer-info">
+                  <span class="layer-dot" style="background: #8b9098;"></span>
+                  <div>
+                    <div class="layer-name">Architectural Cast Shadows</div>
+                    <div class="layer-desc">Show eave &amp; overhang shadow hatching (S)</div>
+                  </div>
+                </div>
+                <span class="toggle-switch">
+                  <input type="checkbox" id="toggle-shadows" checked />
+                  <span class="toggle-track"></span>
+                </span>
+              </label>
+            </div>
+
+            <div class="section-label">Facade Detail Highlights</div>
+            <div class="zone-grid">
+              <button class="zone-btn" data-focus="entry">Curved Entry<span>North · Brick &amp; Glass Block</span></button>
+              <button class="zone-btn" data-focus="courtyard">Arched Doors<span>East · 12'×10' Pool Doors</span></button>
+              <button class="zone-btn" data-focus="bnb">2nd Story Band<span>East · Board &amp; Batten</span></button>
+              <button class="zone-btn" data-focus="patio-garage">Garage &amp; Patio<span>East · Screened Mesh</span></button>
+              <button class="zone-btn" data-focus="adu-south">ADU &amp; Slider<span>South · 9'×6' 3-Pnl Slider</span></button>
+              <button class="zone-btn" data-focus="skylight">Roof &amp; Skylight<span>West · Standing Seam</span></button>
+            </div>
+
+            <div class="section-label">Keyboard Shortcuts</div>
+            <div class="kv-list" style="font-size:11.5px;">
+              <div class="kv-row"><span class="kv-key">Switch Views (All / N / E / S / W)</span><span class="kv-val">1 – 5</span></div>
+              <div class="kv-row"><span class="kv-key">Measure Height / Width / Area</span><span class="kv-val">M</span></div>
+              <div class="kv-row"><span class="kv-key">Ortho Snap (90°)</span><span class="kv-val">Hold Shift</span></div>
+              <div class="kv-row"><span class="kv-key">Level Datum Guides</span><span class="kv-val">L</span></div>
+              <div class="kv-row"><span class="kv-key">Cast Shadows</span><span class="kv-val">S</span></div>
+              <div class="kv-row"><span class="kv-key">Zoom In / Out / Fit</span><span class="kv-val">+ / - / 0</span></div>
+            </div>
+          </section>
+
+          <!-- Panel 2: Exterior Finishes & Key Heights -->
+          <section id="panel-materials" class="sidebar-panel">
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-value">26'-10⅝"</div>
+                <div class="stat-label">Main Bldg. Height</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">15'-3⅝"</div>
+                <div class="stat-label">ADU Bldg. Height</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">4 : 12</div>
+                <div class="stat-label">Main Roof Pitch</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">2 : 12</div>
+                <div class="stat-label">ADU Roof Pitch</div>
+              </div>
+            </div>
+
+            <div class="section-label">Exterior Cladding &amp; Finishes</div>
+            <div class="material-list">
+              <div class="material-card">
+                <span class="mat-swatch mat-brick"></span>
+                <div>
+                  <div class="mat-title">Stacked-Bond Brick</div>
+                  <div class="mat-desc">Curved front entry corner, vertical tower accent, ADU facade &amp; south courtyard return.</div>
+                </div>
+              </div>
+              <div class="material-card">
+                <span class="mat-swatch mat-stucco"></span>
+                <div>
+                  <div class="mat-title">Smooth Exterior Stucco</div>
+                  <div class="mat-desc">Primary body cladding across first floor, upper gables, garage, and ADU walls.</div>
+                </div>
+              </div>
+              <div class="material-card">
+                <span class="mat-swatch mat-bnb"></span>
+                <div>
+                  <div class="mat-title">Vertical Board &amp; Batten</div>
+                  <div class="mat-desc">Second-floor horizontal band wrapping the east courtyard &amp; south facades.</div>
+                </div>
+              </div>
+              <div class="material-card">
+                <span class="mat-swatch mat-roof"></span>
+                <div>
+                  <div class="mat-title">Standing Seam Metal Roof</div>
+                  <div class="mat-desc">4:12 shed roof on main volume (2'-0" overhangs) and 2:12 pitched ADU roof.</div>
+                </div>
+              </div>
+              <div class="material-card">
+                <span class="mat-swatch mat-soffit"></span>
+                <div>
+                  <div class="mat-title">Hardie &amp; T&amp;G Soffit</div>
+                  <div class="mat-desc">Curved entry eyebrow fascia &amp; deep 2'-0" roof eaves.</div>
+                </div>
+              </div>
+              <div class="material-card">
+                <span class="mat-swatch mat-glass"></span>
+                <div>
+                  <div class="mat-title">Glass Block &amp; Curved Glazing</div>
+                  <div class="mat-desc">10' tall glass-block strips (Type V) &amp; curved dining bay fixed glass (Type D).</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-label">Datum &amp; Plate Heights</div>
+            <div class="kv-list">
+              <div class="kv-row"><span class="kv-key">Peak Roof Height</span><span class="kv-val">26'-10⅝"</span></div>
+              <div class="kv-row"><span class="kv-key">Top of Plate (T.O.P.)</span><span class="kv-val">20'-9⅜"</span></div>
+              <div class="kv-row"><span class="kv-key">Second Floor Datum</span><span class="kv-val">11'-8¼"</span></div>
+              <div class="kv-row"><span class="kv-key">First Floor Datum</span><span class="kv-val">0'-0"</span></div>
+              <div class="kv-row"><span class="kv-key">ADU First Floor</span><span class="kv-val">-1'-6"</span></div>
+              <div class="kv-row"><span class="kv-key">Main 1st Fl. Plate</span><span class="kv-val">10'-1⅛"</span></div>
+              <div class="kv-row"><span class="kv-key">Garage Plate Height</span><span class="kv-val">9'-1⅛"</span></div>
+              <div class="kv-row"><span class="kv-key">ADU Plate Height</span><span class="kv-val">11'-6"</span></div>
+            </div>
+          </section>
+
+          <!-- Panel 3: Glazing Lookup (Windows A-V) -->
+          <section id="panel-glazing" class="sidebar-panel">
+            <div class="search-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input id="glazing-search" type="search" placeholder="Search window tag (A–V), curved, slider..." />
+            </div>
+            <div id="glazing-table"></div>
+          </section>
+        </div>
+      </aside>
+
+      <!-- Infinite Vector Canvas -->
+      <main id="viewport" class="viewport-wrap" role="main" aria-label="Interactive Vector Exterior Elevations Canvas">
+        <svg id="elev-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <defs id="elev-defs"></defs>
+          <g id="elev-stage"></g>
+          <g id="slot-datums"></g>
+          <g id="slot-measurements"></g>
+        </svg>
+
+        <!-- Active Measurement Banner -->
+        <div id="measure-banner" class="measure-banner" role="status">
+          <strong>Measure</strong>
+          <button id="btn-mode-dist" class="mini-btn active">Distance</button>
+          <button id="btn-mode-area" class="mini-btn">Area (SF)</button>
+          <span id="measure-hint" style="color:var(--ui-text-secondary);">Click two points · Hold Shift for 90° ortho snap</span>
+          <button id="btn-clear-measures" class="mini-btn">Clear</button>
+          <button id="btn-exit-measure" class="mini-btn">Done</button>
+        </div>
+
+        <!-- Top-Right Active View Badge -->
+        <div class="hud-badge" aria-hidden="true">
+          <span id="hud-sheet" class="hud-sheet">ALL 4 ELEVATIONS · A3.0 / A3.1</span>
+          <span class="hud-scale">1/4" = 1'-0" · TRUE VECTOR</span>
+        </div>
+
+        <!-- Bottom-Left Dynamic Scale Bar -->
+        <div class="scale-bar-widget" aria-hidden="true">
+          <div class="scale-bar-label">
+            <span>0</span>
+            <span id="scale-bar-mid">5'</span>
+            <span id="scale-bar-max">10 ft</span>
+          </div>
+          <div id="scale-bar-graphic" class="scale-bar-graphic" style="width: 120px;">
+            <div class="scale-seg-dark"></div>
+            <div class="scale-seg-light"></div>
+            <div class="scale-seg-dark"></div>
+            <div class="scale-seg-light"></div>
+          </div>
+        </div>
+
+        <!-- Bottom-Center Controls Dock -->
+        <div class="bottom-dock" role="toolbar" aria-label="Canvas Controls">
+          <button id="btn-zoom-out" class="icon-btn" title="Zoom Out (-)" aria-label="Zoom out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          </button>
+          <span id="zoom-readout" class="zoom-readout">100%</span>
+          <button id="btn-zoom-in" class="icon-btn" title="Zoom In (+)" aria-label="Zoom in">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+          </button>
+          <button id="btn-fit" class="icon-btn" title="Fit to Screen (0)">Fit</button>
+          <div class="dock-sep"></div>
+          <button id="btn-measure" class="icon-btn" title="Measure Height, Width or Wall Area (M)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+              <path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" />
+            </svg>
+            <span>Measure</span>
+          </button>
+          <button id="btn-quick-datums" class="icon-btn" title="Toggle Level Datum Guides (L)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" stroke-dasharray="3 2" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" stroke-dasharray="3 2" />
+            </svg>
+            <span>Datums</span>
+          </button>
+        </div>
+
+        <!-- Bottom-Right Live Elevation Readout -->
+        <div id="coord-badge" class="coord-badge">Elev: +0'-0" · X: 0'-0"</div>
+      </main>
+    </div>
+  </div>
+
+  <script src="layers/exterior-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
