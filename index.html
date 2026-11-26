@@ -6,7 +6,7 @@
   <title>House Exterior — Interactive Vector Elevations</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d4e89'/%3E%3Cpath d='M5 23h22v-9L17 8 5 13v10zm4-3v-5l8-3.2L23 15v5H9z' fill='%23fff'/%3E%3C/svg%3E" />
   <meta name="description" content="Interactive pure-vector architectural exterior elevations viewer (North, East, South, West) with true-scale height and area measurements, level datum guides, finish callouts, and glazing schedules." />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
   <div class="app-shell">
@@ -90,7 +90,7 @@
                   <span class="layer-dot" style="background: var(--v-datum);"></span>
                   <div>
                     <div class="layer-name">Level Datum Guides</div>
-                    <div class="layer-desc">Highlight FFE, 2nd Fl., T.O.P. &amp; Ridge (L)</div>
+                    <div class="layer-desc">Highlight 1st Fl., ADU Fl., 2nd Fl., T.O.P. &amp; Roof Peak (L)</div>
                   </div>
                 </div>
                 <span class="toggle-switch">
@@ -105,8 +105,8 @@
                 <div class="layer-info">
                   <span class="layer-dot" style="background: #8b9098;"></span>
                   <div>
-                    <div class="layer-name">Architectural Cast Shadows</div>
-                    <div class="layer-desc">Show eave &amp; overhang shadow hatching (S)</div>
+                    <div class="layer-name">Fine Material Hatching</div>
+                    <div class="layer-desc">Light-gray hatch lines from the PDF (glass block, siding, fascia) on North &amp; East. Not sun shadows (H)</div>
                   </div>
                 </div>
                 <span class="toggle-switch">
@@ -123,7 +123,7 @@
               <button class="zone-btn" data-focus="bnb">2nd Story Band<span>East · Board &amp; Batten</span></button>
               <button class="zone-btn" data-focus="patio-garage">Garage &amp; Patio<span>East · Screened Mesh</span></button>
               <button class="zone-btn" data-focus="adu-south">ADU &amp; Slider<span>South · 9'×6' 3-Pnl Slider</span></button>
-              <button class="zone-btn" data-focus="skylight">Roof &amp; Skylight<span>West · Standing Seam</span></button>
+              <button class="zone-btn" data-focus="skylight">Roof &amp; Skylight<span>West · 4:12 Roof &amp; Skylight T</span></button>
             </div>
 
             <div class="section-label">Keyboard Shortcuts</div>
@@ -132,7 +132,7 @@
               <div class="kv-row"><span class="kv-key">Measure Height / Width / Area</span><span class="kv-val">M</span></div>
               <div class="kv-row"><span class="kv-key">Ortho Snap (90°)</span><span class="kv-val">Hold Shift</span></div>
               <div class="kv-row"><span class="kv-key">Level Datum Guides</span><span class="kv-val">L</span></div>
-              <div class="kv-row"><span class="kv-key">Cast Shadows</span><span class="kv-val">S</span></div>
+              <div class="kv-row"><span class="kv-key">Fine Material Hatching</span><span class="kv-val">H</span></div>
               <div class="kv-row"><span class="kv-key">Zoom In / Out / Fit</span><span class="kv-val">+ / - / 0</span></div>
             </div>
           </section>
@@ -142,11 +142,11 @@
             <div class="stat-grid">
               <div class="stat-card">
                 <div class="stat-value">26'-10⅝"</div>
-                <div class="stat-label">Main Bldg. Height</div>
+                <div class="stat-label">Main Bldg. Ht. (Code, from AAE)</div>
               </div>
               <div class="stat-card">
                 <div class="stat-value">15'-3⅝"</div>
-                <div class="stat-label">ADU Bldg. Height</div>
+                <div class="stat-label">ADU Bldg. Ht. (Code, from AAE)</div>
               </div>
               <div class="stat-card">
                 <div class="stat-value">4 : 12</div>
@@ -163,15 +163,15 @@
               <div class="material-card">
                 <span class="mat-swatch mat-brick"></span>
                 <div>
-                  <div class="mat-title">Stacked-Bond Brick</div>
-                  <div class="mat-desc">Curved front entry corner, vertical tower accent, ADU facade &amp; south courtyard return.</div>
+                  <div class="mat-title">Brick</div>
+                  <div class="mat-desc">Curved front entry block, vertical tower accent, ADU east facade &amp; south return. Bond pattern not specified on A3.0/A3.1.</div>
                 </div>
               </div>
               <div class="material-card">
                 <span class="mat-swatch mat-stucco"></span>
                 <div>
-                  <div class="mat-title">Smooth Exterior Stucco</div>
-                  <div class="mat-desc">Primary body cladding across first floor, upper gables, garage, and ADU walls.</div>
+                  <div class="mat-title">Exterior Stucco</div>
+                  <div class="mat-desc">Primary body cladding across first floor, upper shed-roof end walls, garage, and ADU walls. Finish texture not specified.</div>
                 </div>
               </div>
               <div class="material-card">
@@ -184,8 +184,8 @@
               <div class="material-card">
                 <span class="mat-swatch mat-roof"></span>
                 <div>
-                  <div class="mat-title">Standing Seam Metal Roof</div>
-                  <div class="mat-desc">4:12 shed roof on main volume (2'-0" overhangs) and 2:12 pitched ADU roof.</div>
+                  <div class="mat-title">Roofing (As Specified)</div>
+                  <div class="mat-desc">4:12 shed roofs on main volume (2'-0" overhangs), 2:12 ADU shed, and &frac14;:12 low-slope roofs per the roof plan. Material is "ROOF AS SPEC'D" on A4.1. Not called out as metal.</div>
                 </div>
               </div>
               <div class="material-card">
@@ -206,14 +206,15 @@
 
             <div class="section-label">Datum &amp; Plate Heights</div>
             <div class="kv-list">
-              <div class="kv-row"><span class="kv-key">Peak Roof Height</span><span class="kv-val">26'-10⅝"</span></div>
+              <div class="kv-row"><span class="kv-key">Roof Peak (High Eave, above 1st Fl.)</span><span class="kv-val">≈29'-7½"</span></div>
+              <div class="kv-row"><span class="kv-key">Code Bldg. Height (from AAE 98.85')</span><span class="kv-val">26'-10⅝"</span></div>
               <div class="kv-row"><span class="kv-key">Top of Plate (T.O.P.)</span><span class="kv-val">20'-9⅜"</span></div>
               <div class="kv-row"><span class="kv-key">Second Floor Datum</span><span class="kv-val">11'-8¼"</span></div>
               <div class="kv-row"><span class="kv-key">First Floor Datum</span><span class="kv-val">0'-0"</span></div>
               <div class="kv-row"><span class="kv-key">ADU First Floor</span><span class="kv-val">-1'-6"</span></div>
               <div class="kv-row"><span class="kv-key">Main 1st Fl. Plate</span><span class="kv-val">10'-1⅛"</span></div>
               <div class="kv-row"><span class="kv-key">Garage Plate Height</span><span class="kv-val">9'-1⅛"</span></div>
-              <div class="kv-row"><span class="kv-key">ADU Plate Height</span><span class="kv-val">11'-6"</span></div>
+              <div class="kv-row"><span class="kv-key">ADU Plate Height (above ADU Fl.)</span><span class="kv-val">11'-6"</span></div>
             </div>
           </section>
 
@@ -305,7 +306,7 @@
     </div>
   </div>
 
-  <script src="layers/exterior-data.js"></script>
-  <script src="app.js"></script>
+  <script src="layers/exterior-data.js?v=2"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>

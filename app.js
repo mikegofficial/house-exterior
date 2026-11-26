@@ -47,10 +47,10 @@
   const GLAZING_SCHEDULE = [
     ["A", "1'-6\"",  "5'-0\"",   "2", "FG",          "North facade fixed glass"],
     ["B", "1'-6\"",  "10'-0\"",  "2", "FG",          "South facade tall fixed (ADU)"],
-    ["C", "3'-0\"",  "10'-0\"",  "1", "FG",          "Dining alcove east"],
+    ["C", "3'-0\"",  "10'-0\"",  "1", "FG",          "Dining, north-facing toward pool (not visible on A3.0/A3.1)"],
     ["D", "2'-9\"",  "7'-0\"",   "4", "FG CURVED",   "East courtyard curved dining bay"],
     ["E", "3'-0\"",  "10'-0\"",  "1", "FG",          "West facade full-height fixed"],
-    ["F", "5'-0\"",  "3'-0\"",   "1", "FG",          "Bath 1 fixed"],
+    ["F", "5'-0\"",  "3'-0\"",   "1", "FG",          "Bath 1 fixed (not visible on A3.0/A3.1)"],
     ["G", "3'-0\"",  "5'-0\"",   "3", "CSMT",        "West facade casements (Office & ADU)"],
     ["H", "5'-6\"",  "2'-0\"",   "1", "FG",          "West ADU clerestory"],
     ["I", "1'-6\"",  "6'-0\"",   "4", "FG",          "North & West tall vertical fixed"],
@@ -59,13 +59,13 @@
     ["L", "10'-0\"", "3'-0\"",   "1", "FG",          "East 2nd-floor wide panoramic"],
     ["M", "3'-0\"",  "9'-0\"",   "2", "CSMT",        "East 2nd-floor tall casements"],
     ["N", "9'-0\"",  "6'-0\"",   "1", "3-PNL SLIDER","South 2nd-floor primary slider"],
-    ["O", "9'-0\"",  "2'-0\"",   "1", "AWN",         "West 2nd-floor awning clerestory"],
-    ["P", "7'-2\"",  "3'-0\"",   "1", "FG",          "West 2nd-floor primary bath"],
-    ["Q", "3'-0\"",  "3'-0\"",   "1", "CSMT",        "West 2nd-floor casement"],
-    ["R", "5'-0\"",  "3'-0\"",   "1", "FG",          "West 2nd-floor fixed"],
-    ["S", "3'-0\"",  "6'-0\"",   "1", "CSMT",        "West 2nd-floor Bath 2 casement"],
+    ["O", "9'-0\"",  "2'-0\"",   "1", "FG",          "West 2nd-floor primary closet clerestory (A3.1-4 shows awning mark, confirm)"],
+    ["P", "7'-2\"",  "3'-0\"",   "1", "FG",          "West 2nd-floor Bath 3"],
+    ["Q", "3'-0\"",  "3'-0\"",   "1", "CSMT",        "West 2nd-floor Bath 3 WC casement"],
+    ["R", "5'-0\"",  "3'-0\"",   "1", "FG",          "West 2nd-floor Bath 2 fixed"],
+    ["S", "3'-0\"",  "6'-0\"",   "1", "CSMT",        "West 2nd-floor Game Room casement"],
     ["T", "1'-9½\"", "5'-10¾\"", "1", "SKYLIGHT",    "West roof slope flat skylight"],
-    ["U", "12'-0\"", "2'-0\"",   "1", "GLASS BLOCK", "Interior screened patio transom"],
+    ["U", "12'-0\"", "2'-0\"",   "1", "GLASS BLOCK", "Mud room transom into screened patio"],
     ["V", "1'-4\"",  "10'-0\"",  "5", "GLASS BLOCK", "North & East 10' tall glass-block strips"],
   ];
 
@@ -543,7 +543,9 @@ ${datumsSlot.innerHTML}
     state.mouseWorld = w;
 
     if (state.view === "all") {
-      document.getElementById("coord-badge").textContent = `X: ${formatFeetInches(w.x)} · Y: ${formatFeetInches(-w.y)}`;
+      // Board coordinates aren't building dimensions; report elevation relative to the hovered row's 1st Fl. datum
+      const rowBase = [0, 740, 1480].reduce((best, b) => (Math.abs(w.y - (b - 150)) < Math.abs(w.y - (best - 150)) ? b : best), 0);
+      document.getElementById("coord-badge").textContent = `Elev: ${formatFeetInches(rowBase - w.y, true)}`;
     } else {
       document.getElementById("coord-badge").textContent = `Elev: ${formatFeetInches(-w.y, true)} · X: ${formatFeetInches(w.x)}`;
     }
@@ -575,7 +577,12 @@ ${datumsSlot.innerHTML}
     if (!svg.contains(e.target)) return;
     if (state.measuring && state.measureMode === "area") {
       e.preventDefault();
-      if (state.measureDraft.length > 3) state.measureDraft.pop();
+      // A double-click fires two pointerdowns at (nearly) the same spot; drop the duplicate vertex
+      const d = state.measureDraft;
+      if (d.length >= 2) {
+        const a = d[d.length - 1], b = d[d.length - 2];
+        if (Math.hypot(a.x - b.x, a.y - b.y) < 2) d.pop();
+      }
       finishAreaDraft();
     }
   });
@@ -604,7 +611,7 @@ ${datumsSlot.innerHTML}
     if (e.key === "0") { fitBox(VIEW_META[state.view].box, true); return; }
     if (e.key.toLowerCase() === "m") { setMeasuring(!state.measuring); return; }
     if (e.key.toLowerCase() === "l") { toggleDatums(!state.showDatums); return; }
-    if (e.key.toLowerCase() === "s") { toggleShadows(!state.showShadows); return; }
+    if (e.key.toLowerCase() === "h") { toggleShadows(!state.showShadows); return; }
     if (e.key.toLowerCase() === "b") { document.getElementById("sidebar").classList.toggle("collapsed"); return; }
     if (e.key === "Enter" && state.measuring && state.measureMode === "area") { finishAreaDraft(); return; }
     if (e.key === "Escape") {
@@ -617,7 +624,17 @@ ${datumsSlot.innerHTML}
     if (e.key === "Shift") { state.shiftDown = false; if (state.measuring && state.measureDraft.length) renderMeasurements(); }
   });
 
-  window.addEventListener("resize", () => fitBox(state.vb, false));
+  // Keep the same world center & width on resize (fitBox would re-apply its 8% padding and zoom out each event)
+  window.addEventListener("resize", () => {
+    const rect = viewport.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const cx = state.vb.x + state.vb.w / 2;
+    const cy = state.vb.y + state.vb.h / 2;
+    const w = state.vb.w;
+    const h = w * (rect.height / rect.width);
+    state.vb = { x: cx - w / 2, y: cy - h / 2, w, h };
+    applyViewBox();
+  });
 
   // ========================================================================
   // 7. Wire UI Controls
@@ -667,7 +684,10 @@ ${datumsSlot.innerHTML}
         if (!preset) return;
         if (state.view !== preset.view) {
           state.view = preset.view;
+          state.measurements = [];
+          state.measureDraft = [];
           renderStage();
+          renderMeasurements();
         }
         fitBox(preset.box, true);
       });
