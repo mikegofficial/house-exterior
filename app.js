@@ -59,7 +59,7 @@
     ["L", "10'-0\"", "3'-0\"",   "1", "FG",          "East 2nd-floor wide panoramic"],
     ["M", "3'-0\"",  "9'-0\"",   "2", "CSMT",        "East 2nd-floor tall casements"],
     ["N", "9'-0\"",  "6'-0\"",   "1", "3-PNL SLIDER","South 2nd-floor primary slider"],
-    ["O", "9'-0\"",  "2'-0\"",   "1", "FG",          "West 2nd-floor primary closet clerestory (A3.1-4 shows awning mark, confirm)"],
+    ["O", "9'-0\"",  "2'-0\"",   "1", "AWN",         "West 2nd-floor primary closet awning clerestory"],
     ["P", "7'-2\"",  "3'-0\"",   "1", "FG",          "West 2nd-floor Bath 3"],
     ["Q", "3'-0\"",  "3'-0\"",   "1", "CSMT",        "West 2nd-floor Bath 3 WC casement"],
     ["R", "5'-0\"",  "3'-0\"",   "1", "FG",          "West 2nd-floor Bath 2 fixed"],
